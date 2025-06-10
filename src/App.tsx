@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   AppBar,
   Box,
@@ -72,32 +72,83 @@ interface ItemComanda {
   categoria: string;
 }
 
+interface ItemPlanilha {
+  categoria: string;
+  nome: string;
+  preco: string;
+}
+
+async function carregarDadosPlanilha(url: string): Promise<ItemComanda[]> {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Erro ao carregar dados');
+    
+    const texto = await response.text();
+    const linhas = texto.split('\n').slice(1); // Remove o cabeçalho
+    
+    return linhas.map((linha, index) => {
+      const [categoria, nome, preco] = linha.split(',').map(item => item.trim());
+      return {
+        id: index + 1,
+        categoria: categoria.toUpperCase(),
+        nome: nome.toUpperCase(),
+        preco: parseFloat(preco.replace('R$', '').trim()),
+        quantidade: 0
+      };
+    });
+  } catch (erro) {
+    console.error('Erro ao carregar dados:', erro);
+    return [];
+  }
+}
+
 function App() {
-  const [itens, setItens] = useState<ItemComanda[]>([
-    // SALGADOS
-    { id: 1, nome: 'CALDOS', preco: 8.00, quantidade: 0, categoria: 'SALGADOS' },
-    { id: 2, nome: 'BATATA FRITA', preco: 10.00, quantidade: 0, categoria: 'SALGADOS' },
-    { id: 3, nome: 'HOT DOG', preco: 8.00, quantidade: 0, categoria: 'SALGADOS' },
-    { id: 4, nome: 'PASTEL', preco: 8.00, quantidade: 0, categoria: 'SALGADOS' },
-    { id: 5, nome: 'PÃO COM LINGUIÇA', preco: 8.00, quantidade: 0, categoria: 'SALGADOS' },
-    { id: 6, nome: 'SARAPATEL', preco: 8.00, quantidade: 0, categoria: 'SALGADOS' },
-    { id: 7, nome: 'MILHO COZIDO', preco: 6.00, quantidade: 0, categoria: 'SALGADOS' },
-    { id: 8, nome: 'PIPOCA', preco: 3.00, quantidade: 0, categoria: 'SALGADOS' },
-    // DOCES
-    { id: 9, nome: 'CANJICA', preco: 5.00, quantidade: 0, categoria: 'DOCES' },
-    { id: 10, nome: 'CURAU', preco: 5.00, quantidade: 0, categoria: 'DOCES' },
-    { id: 11, nome: 'PAMONHA', preco: 10.00, quantidade: 0, categoria: 'DOCES' },
-    { id: 12, nome: 'BOLO', preco: 5.00, quantidade: 0, categoria: 'DOCES' },
-    { id: 13, nome: 'ALGODÃO DOCE', preco: 3.00, quantidade: 0, categoria: 'DOCES' },
-    // BEBIDAS
-    { id: 14, nome: 'QUENTÃO', preco: 5.00, quantidade: 0, categoria: 'BEBIDAS' },
-    { id: 15, nome: 'REFRIGERANTE', preco: 5.00, quantidade: 0, categoria: 'BEBIDAS' },
-    { id: 16, nome: 'VINHO QUENTE', preco: 5.00, quantidade: 0, categoria: 'BEBIDAS' },
-    // BRINCADEIRAS
-    { id: 17, nome: 'BRINQUEDOS', preco: 5.00, quantidade: 0, categoria: 'BRINCADEIRAS' },
-    { id: 18, nome: 'BRINCADEIRAS', preco: 5.00, quantidade: 0, categoria: 'BRINCADEIRAS' },
-    { id: 19, nome: 'PESCARIA', preco: 5.00, quantidade: 0, categoria: 'BRINCADEIRAS' },
-  ]);
+  const [itens, setItens] = useState<ItemComanda[]>([]);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState('');
+  const [ultimaAtualizacao, setUltimaAtualizacao] = useState<Date | null>(null);
+
+  const atualizarDados = async () => {
+    setCarregando(true);
+    setErro('');
+    
+    try {
+      const urlPlanilha = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSos7IJi8UU63ewrAn0GN9wWRWpeMt_KxKfnO4GBi_Zm8pCIjkJtAGwR4pcE8Gwzpt_V2Lt_MvmFLFD/pub?gid=0&single=true&output=csv'; 
+      const dadosCarregados = await carregarDadosPlanilha(urlPlanilha);
+      setItens(dadosCarregados);
+      setUltimaAtualizacao(new Date());
+    } catch (erro) {
+      setErro('Erro ao carregar dados. Por favor, tente novamente.');
+    } finally {
+      setCarregando(false);
+    }
+  };
+
+  // Atualização inicial e a cada 5 minutos
+  useEffect(() => {
+    atualizarDados();
+    
+    // Atualizar a cada 5 minutos
+    const intervalo = setInterval(atualizarDados, 5 * 60 * 1000);
+    
+    return () => clearInterval(intervalo);
+  }, []);
+
+  if (carregando) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <Typography>Carregando itens...</Typography>
+      </Box>
+    );
+  }
+
+  if (erro) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <Typography color="error">{erro}</Typography>
+      </Box>
+    );
+  }
 
 
   const alterarQuantidade = (id: number, incremento: number) => {
@@ -162,6 +213,58 @@ function App() {
             zIndex: 1
           }}
         >
+          <Box sx={{ mb: 3, display: 'flex', gap: 2 }}>
+            <Button
+              variant="contained"
+              sx={{
+                background: '#ff0000',
+                color: 'white',
+                borderRadius: '25px',
+                textTransform: 'none',
+                fontSize: '1.1rem',
+                fontWeight: 'bold',
+                flex: 2,
+                '&:hover': {
+                  background: '#cc0000'
+                }
+              }}
+              onClick={() => setItens(itens.map(item => ({ ...item, quantidade: 0 })))}
+            >
+              Limpar Comanda
+            </Button>
+            <Button
+              variant="outlined"
+              sx={{
+                borderColor: '#4CAF50',
+                color: '#4CAF50',
+                borderRadius: '25px',
+                textTransform: 'none',
+                fontSize: '1rem',
+                flex: 1,
+                '&:hover': {
+                  borderColor: '#45a049',
+                  backgroundColor: 'rgba(76, 175, 80, 0.1)'
+                }
+              }}
+              onClick={atualizarDados}
+              disabled={carregando}
+            >
+              {carregando ? 'Atualizando...' : 'Atualizar'}
+            </Button>
+          </Box>
+          {ultimaAtualizacao && (
+            <Typography
+              variant="caption"
+              sx={{ 
+                display: 'block', 
+                textAlign: 'right', 
+                mb: 2,
+                color: 'text.secondary'
+              }}
+            >
+              Última atualização: {ultimaAtualizacao.toLocaleTimeString()}
+            </Typography>
+          )}
           <Paper 
             elevation={3}
             sx={{ 
@@ -390,26 +493,7 @@ function App() {
               </Box>
             )}
 
-            <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
-              <Button
-                variant="contained"
-                fullWidth
-                sx={{
-                  background: 'linear-gradient(45deg, #FF6B6B, #FFB347)',
-                  color: 'white',
-                  borderRadius: '25px',
-                  textTransform: 'none',
-                  fontSize: '1.1rem',
-                  fontWeight: 'bold',
-                  '&:hover': {
-                    background: 'linear-gradient(45deg, #FFB347, #FF6B6B)'
-                  }
-                }}
-                onClick={() => setItens(itens.map(item => ({ ...item, quantidade: 0 })))}
-              >
-                Resetar Tudo
-              </Button>
-            </Box>
+
           </Paper>
         </Container>
       </Box>
