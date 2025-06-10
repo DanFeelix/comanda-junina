@@ -113,7 +113,7 @@ function App() {
     setErro('');
     
     try {
-      const urlPlanilha = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSos7IJi8UU63ewrAn0GN9wWRWpeMt_KxKfnO4GBi_Zm8pCIjkJtAGwR4pcE8Gwzpt_V2Lt_MvmFLFD/pub?gid=0&single=true&output=csv'; 
+      const urlPlanilha = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSD5m92hcRo4zNdwHxRKnJ8W4wEzuWDyYvdp6QiBuh9H3elCF1N3gzLPjGDOucl6tDjQ7H7dQKUQnbB/pub?output=csv'; 
       const dadosCarregados = await carregarDadosPlanilha(urlPlanilha);
       setItens(dadosCarregados);
       setUltimaAtualizacao(new Date());
