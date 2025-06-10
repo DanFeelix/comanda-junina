@@ -1,14 +1,76 @@
-# Getting Started with Create React App
+# 🎉 Comanda Junina Digital
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Uma aplicação web responsiva para gerenciar comandas de festa junina, desenvolvida com React e Material-UI.
 
-## Available Scripts
+![Comanda Junina Preview](./src/img/360_F_499624311_uftK1Z2520YNj8woSkAi7CQ8CZavrSHh.jpg)
 
-In the project directory, you can run:
+## 📱 Características
 
-### `npm start`
+- Interface responsiva otimizada para celulares
+- Organização por categorias (SALGADOS, DOCES, BEBIDAS, BRINCADEIRAS)
+- Controle de quantidades com botões + e -
+- Cálculo automático de subtotais por item
+- Total geral da comanda
+- Resumo compacto dos itens selecionados
+- Botão para resetar todas as quantidades
+- Design temático de festa junina
 
-Runs the app in the development mode.\
+## 🎨 Design
+
+- Cores vibrantes e festivas
+- Gradientes coloridos
+- Elementos arredondados
+- Feedback visual para itens selecionados
+- Imagem de fundo temática
+- Efeitos de hover e transições suaves
+
+## 🛠️ Tecnologias
+
+- React 18+
+- TypeScript
+- Material-UI 5
+- Emotion (para estilos)
+
+## 📦 Instalação
+
+```bash
+# Clone o repositório
+git clone [URL_DO_SEU_REPOSITORIO]
+
+# Entre no diretório
+cd comanda-junina
+
+# Instale as dependências
+npm install
+
+# Inicie o servidor de desenvolvimento
+npm start
+```
+
+## 🚀 Uso
+
+1. Acesse a aplicação no navegador (http://localhost:3000)
+2. Navegue pelas categorias de produtos
+3. Use os botões + e - para ajustar as quantidades
+4. Veja o subtotal de cada item e o total geral
+5. Use o botão "Resetar Tudo" para zerar as quantidades
+
+## 📱 Acesso via Celular
+
+Para acessar via celular durante o desenvolvimento:
+
+1. Certifique-se que o computador e o celular estão na mesma rede Wi-Fi
+2. Descubra o IP do seu computador
+3. Acesse no celular usando o IP e a porta 3000 (exemplo: http://192.168.1.100:3000)
+
+## 🤝 Contribuindo
+
+Contribuições são bem-vindas! Sinta-se à vontade para abrir uma issue ou enviar um pull request.
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 The page will reload if you make edits.\
