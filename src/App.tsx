@@ -44,7 +44,7 @@ const theme = createTheme({
     MuiCssBaseline: {
       styleOverrides: {
         body: {
-          backgroundImage: `url(${require('./img/360_F_499624311_uftK1Z2520YNj8woSkAi7CQ8CZavrSHh.jpg')})`,
+          // backgroundImage: `url(${require('./img/360_F_499624311_uftK1Z2520YNj8woSkAi7CQ8CZavrSHh.jpg')})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
