@@ -70,12 +70,14 @@ interface ItemComanda {
   preco: number;
   quantidade: number;
   categoria: string;
+  imageUrl: string;
 }
 
 interface ItemPlanilha {
   categoria: string;
   nome: string;
   preco: string;
+  imageUrl: string;
 }
 
 async function carregarDadosPlanilha(url: string): Promise<ItemComanda[]> {
@@ -84,16 +86,28 @@ async function carregarDadosPlanilha(url: string): Promise<ItemComanda[]> {
     if (!response.ok) throw new Error('Erro ao carregar dados');
     
     const texto = await response.text();
-    const linhas = texto.split('\n').slice(1); // Remove o cabeçalho
+    const linhas = texto.split('\n');
+    const cabecalho = linhas[0].split(',').map(col => col.trim().toLowerCase());
+
+    debugger;
     
-    return linhas.map((linha, index) => {
-      const [categoria, nome, preco] = linha.split(',').map(item => item.trim());
+    // Índices das colunas baseados no cabeçalho
+    const idxCategoria = cabecalho.indexOf('categorias');
+    const idxNome = cabecalho.indexOf('nomes');
+    const idxValor = cabecalho.indexOf('valores');
+    const idxImagem = cabecalho.indexOf('imagens');
+    
+    // Processa as linhas de dados (pula o cabeçalho)
+    return linhas.slice(1).map((linha, index) => {
+      const colunas = linha.split(',').map(item => item.trim());
+      
       return {
         id: index + 1,
-        categoria: categoria.toUpperCase(),
-        nome: nome.toUpperCase(),
-        preco: parseFloat(preco.replace('R$', '').trim()),
-        quantidade: 0
+        categoria: colunas[idxCategoria].toUpperCase(),
+        nome: colunas[idxNome].toUpperCase(),
+        preco: parseFloat(colunas[idxValor].replace('R$', '').trim()),
+        quantidade: 0,
+        imageUrl: colunas[idxImagem] || ''
       };
     });
   } catch (erro) {
@@ -104,7 +118,7 @@ async function carregarDadosPlanilha(url: string): Promise<ItemComanda[]> {
 
 function App() {
   const [itens, setItens] = useState<ItemComanda[]>([]);
-  const [carregando, setCarregando] = useState(true);
+  const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState('');
   const [ultimaAtualizacao, setUltimaAtualizacao] = useState<Date | null>(null);
 
@@ -113,7 +127,7 @@ function App() {
     setErro('');
     
     try {
-      const urlPlanilha = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSD5m92hcRo4zNdwHxRKnJ8W4wEzuWDyYvdp6QiBuh9H3elCF1N3gzLPjGDOucl6tDjQ7H7dQKUQnbB/pub?output=csv'; 
+      const urlPlanilha = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSD5m92hcRo4zNdwHxRKnJ8W4wEzuWDyYvdp6QiBuh9H3elCF1N3gzLPjGDOucl6tDjQ7H7dQKUQnbB/pub?gid=0&single=true&output=csv'; 
       const dadosCarregados = await carregarDadosPlanilha(urlPlanilha);
       setItens(dadosCarregados);
       setUltimaAtualizacao(new Date());
@@ -159,6 +173,12 @@ function App() {
 
   const calcularTotal = () => {
     return itens.reduce((total, item) => total + (item.preco * item.quantidade), 0);
+  };
+
+  // Função para obter categorias únicas
+  const getCategorias = () => {
+    const categorias = new Set(itens.map(item => item.categoria));
+    return Array.from(categorias);
   };
 
   return (
@@ -213,80 +233,81 @@ function App() {
             zIndex: 1
           }}
         >
-          <Box sx={{ mb: 3, display: 'flex', gap: 2 }}>
-            <Button
-              variant="contained"
-              sx={{
-                background: '#ff0000',
-                color: 'white',
-                borderRadius: '25px',
-                textTransform: 'none',
-                fontSize: '1.1rem',
-                fontWeight: 'bold',
-                flex: 2,
-                '&:hover': {
-                  background: '#cc0000'
-                }
-              }}
-              onClick={() => setItens(itens.map(item => ({ ...item, quantidade: 0 })))}
-            >
-              Limpar Comanda
-            </Button>
-            <Button
-              variant="outlined"
-              sx={{
-                borderColor: '#4CAF50',
-                color: '#4CAF50',
-                borderRadius: '25px',
-                textTransform: 'none',
-                fontSize: '1rem',
-                flex: 1,
-                '&:hover': {
-                  borderColor: '#45a049',
-                  backgroundColor: 'rgba(76, 175, 80, 0.1)'
-                }
-              }}
-              onClick={atualizarDados}
-              disabled={carregando}
-            >
-              {carregando ? 'Atualizando...' : 'Atualizar'}
-            </Button>
-          </Box>
-          {ultimaAtualizacao && (
-            <Typography
-              variant="caption"
-              sx={{ 
-                display: 'block', 
-                textAlign: 'right', 
-                mb: 2,
-                color: 'text.secondary'
-              }}
-            >
-              Última atualização: {ultimaAtualizacao.toLocaleTimeString()}
-            </Typography>
-          )}
-          <Paper 
-            elevation={3}
-            sx={{ 
-              p: { xs: 2, sm: 3 }, 
-              mb: 4,
-              backgroundColor: '#fff',
-              borderRadius: 2
-            }}
-          >
+          <Box sx={{ mb: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
+              <Button
+                variant="contained"
+                sx={{
+                  background: '#ff0000',
+                  color: 'white',
+                  borderRadius: '25px',
+                  textTransform: 'none',
+                  fontSize: '1.1rem',
+                  fontWeight: 'bold',
+                  flex: 2,
+                  '&:hover': {
+                    background: '#cc0000'
+                  }
+                }}
+                onClick={() => setItens(itens.map(item => ({ ...item, quantidade: 0 })))}
+              >
+                Limpar Comanda
+              </Button>
+              <Button
+                variant="outlined"
+                sx={{
+                  borderColor: '#4CAF50',
+                  color: '#4CAF50',
+                  borderRadius: '25px',
+                  textTransform: 'none',
+                  fontSize: '1rem',
+                  flex: 1,
+                  '&:hover': {
+                    borderColor: '#45a049',
+                    backgroundColor: 'rgba(76, 175, 80, 0.1)'
+                  }
+                }}
+                onClick={atualizarDados}
+                disabled={carregando}
+              >
+                {carregando ? 'Atualizando...' : 'Atualizar'}
+              </Button>
+            </Box>
 
-            <List>
-              {['SALGADOS', 'DOCES', 'BEBIDAS', 'BRINCADEIRAS'].map((categoria) => (
+            {ultimaAtualizacao && (
+              <Typography
+                variant="caption"
+                sx={{ 
+                  display: 'block', 
+                  textAlign: 'right', 
+                  mb: 2,
+                  color: 'text.secondary'
+                }}
+              >
+                Última atualização: {ultimaAtualizacao.toLocaleTimeString()}
+              </Typography>
+            )}
+          </Box>
+
+          <Paper
+            elevation={3}
+            sx={{
+              p: 3,
+              borderRadius: 2,
+              backgroundColor: 'rgba(255, 255, 255, 0.9)'
+            }}
+          >             
+            <List sx={{ width: '100%' }}>
+              {getCategorias().map((categoria) => (
                 <div key={categoria}>
                   <Box
                     sx={{
+                      display: 'flex',
+                      alignItems: { xs: 'flex-start', sm: 'center' },
+                      gap: { xs: 1, sm: 0 },
+                      py: { xs: 2, sm: 2 },
                       position: 'relative',
-                      textAlign: 'center',
-                      mt: 3,
-                      mb: 2,
-                      '&:first-of-type': {
-                        mt: 0
-                      }
+                      mb: 2
                     }}
                   >
                     <Typography
@@ -321,98 +342,119 @@ function App() {
                   {itens
                     .filter(item => item.categoria === categoria)
                     .map((item) => (
-                <ListItem
-                  key={item.id}
-                  sx={{
-                    flexDirection: { xs: 'column', sm: 'row' },
-                    alignItems: { xs: 'flex-start', sm: 'center' },
-                    gap: { xs: 1, sm: 0 },
-                    py: { xs: 2, sm: 2 },
-                    px: 2,
-                    mb: 1,
-                    minHeight: { xs: 'auto', sm: '80px' },
-                    background: item.quantidade > 0 ? 'linear-gradient(45deg, rgba(255,107,107,0.1), rgba(255,179,71,0.1))' : 'transparent',
-                    border: '2px solid',
-                    borderColor: item.quantidade > 0 ? '#FF6B6B' : 'rgba(0,0,0,0.12)',
-                    borderRadius: 1,
-                    transition: 'all 0.2s ease'
-                  }}
-                  secondaryAction={
-                    <Box sx={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      gap: 2,
-                      width: { xs: '100%', sm: 'auto' },
-                      mt: { xs: 1, sm: 0 },
-                      justifyContent: { xs: 'space-between', sm: 'flex-end' },
-                      backgroundColor: 'rgba(0,0,0,0.03)',
-                      borderRadius: 1,
-                      p: 1
-                    }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <IconButton
-                          edge="end"
-                          onClick={() => alterarQuantidade(item.id, -1)}
-                          disabled={item.quantidade === 0}
-                        >
-                          <RemoveIcon />
-                        </IconButton>
-                        <Typography sx={{ minWidth: '30px', textAlign: 'center' }}>
-                          {item.quantidade}
-                        </Typography>
-                        <IconButton edge="end" onClick={() => alterarQuantidade(item.id, 1)}>
-                          <AddIcon />
-                        </IconButton>
-                      </Box>
-                      <Typography sx={{ 
-                        minWidth: '80px', 
-                        textAlign: 'right', 
-                        fontWeight: item.quantidade > 0 ? 'bold' : 'normal',
-                        color: item.quantidade > 0 ? '#FF6B6B' : 'text.secondary'
-                      }}>
-                        R$ {(item.preco * item.quantidade).toFixed(2)}
-                      </Typography>
-                    </Box>
-                  }
-                >
-                  <ListItemText
-                    primary={
-                      <Typography 
-                        variant="body1" 
-                        sx={{ 
-                          fontWeight: 'medium',
-                          wordBreak: 'break-word',
-                          hyphens: 'auto',
-                          lineHeight: 1.2,
-                          mb: 0.5
+                      <ListItem
+                        key={item.id}
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          mb: 2,
+                          p: 2,
+                          backgroundColor: item.quantidade > 0 ? 'rgba(255, 107, 107, 0.1)' : 'rgba(255, 255, 255, 0.7)',
+                          borderRadius: '10px',
+                          border: item.quantidade > 0 ? '2px solid #FF6B6B' : '1px solid rgba(0,0,0,0.1)',
+                          '&:hover': {
+                            backgroundColor: item.quantidade > 0 ? 'rgba(255, 107, 107, 0.15)' : 'rgba(255, 255, 255, 0.85)'
+                          }
                         }}
                       >
-                        {item.nome}
-                      </Typography>
-                    }
-                    secondary={
-                      <Typography 
-                        variant="body2" 
-                        color="text.secondary" 
-                        sx={{ 
-                          fontSize: { xs: '0.9rem', sm: '0.875rem' },
-                          mt: 0.5
-                        }}
-                      >
-                        R$ {item.preco.toFixed(2)}
-                      </Typography>
-                    }
-                    sx={{ 
-                      flex: 1, 
-                      mr: { xs: 0, sm: 2 },
-                      '& .MuiListItemText-primary': {
-                        display: 'block',
-                        width: '100%'
-                      }
-                    }}
-                  />
-                </ListItem>
-              ))}
+                        <Box sx={{ 
+                          display: 'flex', 
+                          width: '100%',
+                          mb: 1
+                        }}>
+                          <Box sx={{ 
+                            width: 80, 
+                            height: 80, 
+                            mr: 2,
+                            overflow: 'hidden',
+                            borderRadius: '8px',
+                            flexShrink: 0,
+                            border: '1px solid rgba(0,0,0,0.1)'
+                          }}>
+                            <img 
+                              src={item.imageUrl || 'https://via.placeholder.com/80'}
+                              alt={item.nome}
+                              style={{ 
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover'
+                              }}
+                            />
+                          </Box>
+                          <Box sx={{ 
+                            flex: 1,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'center'
+                          }}>
+                            <Typography
+                              variant="subtitle1"
+                              sx={{
+                                fontWeight: 'medium',
+                                fontSize: { xs: '1rem', sm: '1.1rem' },
+                                mb: 0.5
+                              }}
+                            >
+                              {item.nome}
+                            </Typography>
+                            <Typography 
+                              variant="body2" 
+                              color="text.secondary" 
+                              sx={{ 
+                                fontSize: { xs: '0.9rem', sm: '0.875rem' }
+                              }}
+                            >
+                              R$ {item.preco.toFixed(2)}
+                            </Typography>
+                          </Box>
+                          <Box sx={{ 
+                            display: 'flex', 
+                            flexDirection: 'column',
+                            alignItems: 'center', 
+                            justifyContent: 'center',
+                            gap: 1
+                          }}>
+                            <IconButton 
+                              size="small" 
+                              onClick={() => alterarQuantidade(item.id, 1)}
+                              sx={{
+                                backgroundColor: '#FF6B6B',
+                                color: 'white',
+                                '&:hover': {
+                                  backgroundColor: '#ff5252'
+                                }
+                              }}
+                            >
+                              <AddIcon />
+                            </IconButton>
+                            <Typography 
+                              sx={{ 
+                                minWidth: '30px', 
+                                textAlign: 'center',
+                                fontWeight: 'bold',
+                                color: item.quantidade > 0 ? '#FF6B6B' : 'text.secondary'
+                              }}
+                            >
+                              {item.quantidade}
+                            </Typography>
+                            <IconButton 
+                              size="small" 
+                              onClick={() => alterarQuantidade(item.id, -1)}
+                              disabled={item.quantidade === 0}
+                              sx={{
+                                border: '1px solid',
+                                borderColor: item.quantidade > 0 ? '#FF6B6B' : 'rgba(0,0,0,0.12)',
+                                '&:not(:disabled):hover': {
+                                  backgroundColor: 'rgba(255,107,107,0.1)'
+                                }
+                              }}
+                            >
+                              <RemoveIcon />
+                            </IconButton>
+                          </Box>
+                        </Box>
+                      </ListItem>
+                    ))}
                 </div>
               ))}
             </List>
@@ -427,22 +469,10 @@ function App() {
             }}>
               <Box sx={{ 
                 display: 'flex', 
-                flexDirection: { xs: 'column', sm: 'row' },
                 justifyContent: 'space-between', 
-                alignItems: { xs: 'flex-start', sm: 'center' }, 
-                gap: { xs: 1, sm: 0 },
-                mb: 1 
+                alignItems: 'center'
               }}>
-                <Typography 
-                  variant="subtitle1" 
-                  color="text.secondary"
-                  sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
-                >
-                  Quantidade de Itens: {itens.reduce((total, item) => total + item.quantidade, 0)}
-                </Typography>
-              </Box>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography variant="h6">Total:</Typography>
+                <Typography variant="h6">Total da Comanda:</Typography>
                 <Typography variant="h6" color="primary" sx={{ fontWeight: 'bold' }}>
                   R$ {calcularTotal().toFixed(2)}
                 </Typography>

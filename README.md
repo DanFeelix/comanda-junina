@@ -7,13 +7,15 @@ Uma aplicação web responsiva para gerenciar comandas de festa junina, desenvol
 ## 📱 Características
 
 - Interface responsiva otimizada para celulares
-- Organização por categorias (SALGADOS, DOCES, BEBIDAS, BRINCADEIRAS)
+- Categorias dinâmicas baseadas nos dados da planilha
+- Layout moderno similar ao iFood com imagens dos produtos
 - Controle de quantidades com botões + e -
-- Cálculo automático de subtotais por item
-- Total geral da comanda
+- Total geral da comanda (sem subtotais)
 - Resumo compacto dos itens selecionados
-- Botão para resetar todas as quantidades
+- Botões para limpar comanda e atualizar dados
 - Design temático de festa junina
+- Integração com planilha Google Sheets
+- Suporte a imagens dos produtos via URL
 
 ## 🎨 Design
 
@@ -30,6 +32,8 @@ Uma aplicação web responsiva para gerenciar comandas de festa junina, desenvol
 - TypeScript
 - Material-UI 5
 - Emotion (para estilos)
+- Google Sheets como backend
+- CSV para importação de dados
 
 ## 📦 Instalação
 
@@ -50,10 +54,20 @@ npm start
 ## 🚀 Uso
 
 1. Acesse a aplicação no navegador (http://localhost:3000)
-2. Navegue pelas categorias de produtos
-3. Use os botões + e - para ajustar as quantidades
-4. Veja o subtotal de cada item e o total geral
-5. Use o botão "Resetar Tudo" para zerar as quantidades
+2. Os dados são carregados automaticamente da planilha do Google Sheets
+3. Navegue pelas categorias de produtos (geradas dinamicamente)
+4. Use os botões + e - para ajustar as quantidades
+5. Veja o total geral da comanda
+6. Use o botão "Limpar Comanda" para zerar as quantidades
+7. Use o botão "Atualizar" para recarregar os dados da planilha
+
+## 📊 Estrutura da Planilha
+
+A planilha deve ter as seguintes colunas:
+1. Categorias - Categoria do item
+2. Nomes - Nome do produto
+3. Valores - Preço do produto
+4. Imagens - URL da imagem do produto
 
 ## 📱 Acesso via Celular
 
