@@ -72,6 +72,7 @@ interface ItemComanda {
   quantidade: number;
   categoria: string;
   imageUrl: string;
+  ativo: boolean;
 }
 
 interface ItemPlanilha {
@@ -79,6 +80,7 @@ interface ItemPlanilha {
   nome: string;
   preco: string;
   imageUrl: string;
+  ativo: string;
 }
 
 async function carregarDadosPlanilha(url: string): Promise<ItemComanda[]> {
@@ -89,28 +91,31 @@ async function carregarDadosPlanilha(url: string): Promise<ItemComanda[]> {
     const texto = await response.text();
     const linhas = texto.split('\n');
     const cabecalho = linhas[0].split(',').map(col => col.trim().toLowerCase());
-
-    debugger;
     
     // Índices das colunas baseados no cabeçalho
     const idxCategoria = cabecalho.indexOf('categorias');
     const idxNome = cabecalho.indexOf('nomes');
     const idxValor = cabecalho.indexOf('valores');
     const idxImagem = cabecalho.indexOf('imagens');
+    const idxAtivo = cabecalho.indexOf('ativo');
     
     // Processa as linhas de dados (pula o cabeçalho)
-    return linhas.slice(1).map((linha, index) => {
-      const colunas = linha.split(',').map(item => item.trim());
-      
-      return {
-        id: index + 1,
-        categoria: colunas[idxCategoria].toUpperCase(),
-        nome: colunas[idxNome].toUpperCase(),
-        preco: parseFloat(colunas[idxValor].replace('R$', '').trim()),
-        quantidade: 0,
-        imageUrl: colunas[idxImagem] || ''
-      };
-    });
+    return linhas
+      .slice(1)
+      .map((linha, index) => {
+        const colunas = linha.split(',').map(item => item.trim());
+        
+        return {
+          id: index + 1,
+          categoria: colunas[idxCategoria].toUpperCase(),
+          nome: colunas[idxNome].toUpperCase(),
+          preco: parseFloat(colunas[idxValor].replace('R$', '').trim()),
+          quantidade: 0,
+          imageUrl: colunas[idxImagem] || '',
+          ativo: colunas[idxAtivo] === '1'
+        };
+      })
+      .filter(item => item.ativo); // Filtra apenas os itens ativos
   } catch (erro) {
     console.error('Erro ao carregar dados:', erro);
     return [];
