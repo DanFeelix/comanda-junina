@@ -17,6 +17,7 @@ import {
   Grid
 } from '@mui/material';
 import { Add as AddIcon, Remove as RemoveIcon } from '@mui/icons-material';
+import InstagramIcon from '@mui/icons-material/Instagram';
 
 const theme = createTheme({
   palette: {
@@ -185,18 +186,8 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box sx={{ 
-        flexGrow: 1,
-        position: 'relative',
-        '&::before': {
-          content: '""',
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(255, 107, 107, 0.1)',
-          zIndex: 0
-        }
+        minHeight: '100vh',
+        py: 2
       }}>
         <AppBar 
           position="static" 
@@ -233,7 +224,7 @@ function App() {
             zIndex: 1
           }}
         >
-          <Box sx={{ mb: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Box sx={{ mb: 2, display: 'flex', flexDirection: 'column', gap: 1 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
               <Button
                 variant="contained"
@@ -244,7 +235,7 @@ function App() {
                   textTransform: 'none',
                   fontSize: '1.1rem',
                   fontWeight: 'bold',
-                  flex: 2,
+                  flex: 1,
                   '&:hover': {
                     background: '#cc0000'
                   }
@@ -254,39 +245,26 @@ function App() {
                 Limpar Comanda
               </Button>
               <Button
-                variant="outlined"
+                variant="contained"
                 sx={{
-                  borderColor: '#4CAF50',
-                  color: '#4CAF50',
+                  background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)',
+                  color: 'white',
                   borderRadius: '25px',
                   textTransform: 'none',
                   fontSize: '1rem',
                   flex: 1,
                   '&:hover': {
-                    borderColor: '#45a049',
-                    backgroundColor: 'rgba(76, 175, 80, 0.1)'
+                    background: 'linear-gradient(45deg, #e6683c 0%, #dc2743 25%, #cc2366 50%, #bc1888 75%, #f09433 100%)'
                   }
                 }}
-                onClick={atualizarDados}
-                disabled={carregando}
+                startIcon={<InstagramIcon />}
+                onClick={() => window.open('https://www.instagram.com/areapastoral_saogeraldomajella?igshid=b29tbWRsY3g1cnY0', '_blank')}
               >
-                {carregando ? 'Atualizando...' : 'Atualizar'}
+                Siga no Instagram
               </Button>
             </Box>
 
-            {ultimaAtualizacao && (
-              <Typography
-                variant="caption"
-                sx={{ 
-                  display: 'block', 
-                  textAlign: 'right', 
-                  mb: 2,
-                  color: 'text.secondary'
-                }}
-              >
-                Última atualização: {ultimaAtualizacao.toLocaleTimeString()}
-              </Typography>
-            )}
+
           </Box>
 
           <Paper
