@@ -18,6 +18,7 @@ import {
 } from '@mui/material';
 import { Add as AddIcon, Remove as RemoveIcon } from '@mui/icons-material';
 import InstagramIcon from '@mui/icons-material/Instagram';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 
 const theme = createTheme({
   palette: {
@@ -192,35 +193,8 @@ function App() {
       <CssBaseline />
       <Box sx={{ 
         minHeight: '100vh',
-        py: 2
+        py: 1
       }}>
-        <AppBar 
-          position="static" 
-          sx={{ 
-            mb: 4,
-            backgroundColor: 'transparent',
-            boxShadow: 'none',
-            position: 'relative',
-            zIndex: 1
-          }}
-        >
-          <Typography 
-            variant="h4" 
-            component="div" 
-            sx={{ 
-              p: { xs: 1, sm: 2 }, 
-              textAlign: 'center',
-              fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' },
-              background: 'linear-gradient(45deg, #FF6B6B, #FFB347)',
-              color: 'white',
-              textShadow: '2px 2px 4px rgba(0,0,0,0.2)',
-              borderBottom: '3px solid #FFD93D'
-            }}
-          >
-            🎉 Comanda Festa Junina 🎉
-          </Typography>
-        </AppBar>
-
         <Container 
           maxWidth="sm" 
           sx={{ 
@@ -229,43 +203,66 @@ function App() {
             zIndex: 1
           }}
         >
-          <Box sx={{ mb: 2, display: 'flex', flexDirection: 'column', gap: 1 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, mb: 1 }}>
+            <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1 }}>
               <Button
                 variant="contained"
+                size="small"
+                sx={{
+                  background: '#25D366',
+                  color: 'white',
+                  borderRadius: '20px',
+                  textTransform: 'none',
+                  fontSize: '0.875rem',
+                  fontWeight: 'bold',
+                  padding: '6px 12px',
+                  '&:hover': {
+                    background: '#128C7E'
+                  }
+                }}
+                startIcon={<WhatsAppIcon sx={{ fontSize: '1.1rem' }} />}
+                onClick={() => window.open('https://chat.whatsapp.com/Hqf3kD3Ld5M5gWPlBeyrf8', '_blank')}
+              >
+                Entrar na Comunidade
+              </Button>
+              <Button
+                variant="contained"
+                size="small"
+                sx={{
+                  background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)',
+                  color: 'white',
+                  borderRadius: '20px',
+                  textTransform: 'none',
+                  fontSize: '0.875rem',
+                  padding: '6px 12px',
+                  '&:hover': {
+                    background: 'linear-gradient(45deg, #e6683c 0%, #dc2743 25%, #cc2366 50%, #bc1888 75%, #f09433 100%)'
+                  }
+                }}
+                startIcon={<InstagramIcon sx={{ fontSize: '1.1rem' }} />}
+                onClick={() => window.open('https://www.instagram.com/areapastoral_saogeraldomajella?igshid=b29tbWRsY3g1cnY0', '_blank')}
+              >
+                Seguir no Instagram
+              </Button>
+              <Button
+                variant="contained"
+                size="small"
                 sx={{
                   background: '#ff0000',
                   color: 'white',
-                  borderRadius: '25px',
+                  borderRadius: '20px',
                   textTransform: 'none',
-                  fontSize: '1.1rem',
+                  fontSize: '0.875rem',
                   fontWeight: 'bold',
-                  flex: 1,
+                  padding: '6px 12px',
+                  gridColumn: '1 / -1',
                   '&:hover': {
                     background: '#cc0000'
                   }
                 }}
                 onClick={() => setItens(itens.map(item => ({ ...item, quantidade: 0 })))}
               >
-                Limpar Comanda
-              </Button>
-              <Button
-                variant="contained"
-                sx={{
-                  background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)',
-                  color: 'white',
-                  borderRadius: '25px',
-                  textTransform: 'none',
-                  fontSize: '1rem',
-                  flex: 1,
-                  '&:hover': {
-                    background: 'linear-gradient(45deg, #e6683c 0%, #dc2743 25%, #cc2366 50%, #bc1888 75%, #f09433 100%)'
-                  }
-                }}
-                startIcon={<InstagramIcon />}
-                onClick={() => window.open('https://www.instagram.com/areapastoral_saogeraldomajella?igshid=b29tbWRsY3g1cnY0', '_blank')}
-              >
-                Siga no Instagram
+                Limpar
               </Button>
             </Box>
 
@@ -288,9 +285,9 @@ function App() {
                       display: 'flex',
                       alignItems: { xs: 'flex-start', sm: 'center' },
                       gap: { xs: 1, sm: 0 },
-                      py: { xs: 2, sm: 2 },
+                      py: { xs: 1, sm: 1 },
                       position: 'relative',
-                      mb: 2
+                      mb: 1
                     }}
                   >
                     <Typography
@@ -300,12 +297,13 @@ function App() {
                         color: 'white',
                         fontWeight: 'bold',
                         display: 'inline-block',
-                        px: 3,
-                        py: 1,
+                        px: 2,
+                        py: 0.5,
                         borderRadius: '20px',
                         boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
                         position: 'relative',
                         zIndex: 1,
+                        fontSize: '1rem'
                       }}
                     >
                       {categoria}
@@ -322,122 +320,106 @@ function App() {
                       }}
                     />
                   </Box>
-                  {itens
-                    .filter(item => item.categoria === categoria)
-                    .map((item) => (
-                      <ListItem
-                        key={item.id}
-                        sx={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          mb: 2,
-                          p: 2,
-                          backgroundColor: item.quantidade > 0 ? 'rgba(255, 107, 107, 0.1)' : 'rgba(255, 255, 255, 0.7)',
-                          borderRadius: '10px',
-                          border: item.quantidade > 0 ? '2px solid #FF6B6B' : '1px solid rgba(0,0,0,0.1)',
-                          '&:hover': {
-                            backgroundColor: item.quantidade > 0 ? 'rgba(255, 107, 107, 0.15)' : 'rgba(255, 255, 255, 0.85)'
-                          }
-                        }}
-                      >
-                        <Box sx={{ 
-                          display: 'flex', 
-                          width: '100%',
-                          mb: 1
-                        }}>
-                          <Box sx={{ 
-                            width: 80, 
-                            height: 80, 
-                            mr: 2,
-                            overflow: 'hidden',
-                            borderRadius: '8px',
-                            flexShrink: 0,
-                            border: '1px solid rgba(0,0,0,0.1)'
-                          }}>
-                            <img 
-                              src={item.imageUrl || 'https://via.placeholder.com/80'}
-                              alt={item.nome}
-                              style={{ 
-                                width: '100%',
-                                height: '100%',
-                                objectFit: 'cover'
-                              }}
-                            />
+                  <Grid container spacing={1}>
+                    {itens
+                      .filter(item => item.categoria === categoria)
+                      .map((item) => (
+                        <Grid item xs={6} key={item.id}>
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              flexDirection: 'column',
+                              p: 1,
+                              backgroundColor: item.quantidade > 0 ? 'rgba(255, 107, 107, 0.1)' : 'rgba(255, 255, 255, 0.7)',
+                              borderRadius: '10px',
+                              border: item.quantidade > 0 ? '2px solid #FF6B6B' : '1px solid rgba(0,0,0,0.1)',
+                              '&:hover': {
+                                backgroundColor: item.quantidade > 0 ? 'rgba(255, 107, 107, 0.15)' : 'rgba(255, 255, 255, 0.85)'
+                              },
+                              height: '100%'
+                            }}
+                          >
+                            <Box sx={{ 
+                              flex: 1,
+                              display: 'flex',
+                              flexDirection: 'column',
+                              justifyContent: 'space-between'
+                            }}>
+                              <Box>
+                                <Typography
+                                  variant="subtitle2"
+                                  sx={{
+                                    fontWeight: 'medium',
+                                    fontSize: '0.9rem',
+                                    mb: 0.5
+                                  }}
+                                >
+                                  {item.nome}
+                                </Typography>
+                                <Typography 
+                                  variant="body2" 
+                                  color="text.secondary" 
+                                  sx={{ 
+                                    fontSize: '0.8rem'
+                                  }}
+                                >
+                                  R$ {item.preco.toFixed(2)}
+                                </Typography>
+                              </Box>
+                              <Box sx={{ 
+                                display: 'flex', 
+                                justifyContent: 'space-between',
+                                alignItems: 'center', 
+                                mt: 1
+                              }}>
+                                <Typography 
+                                  sx={{ 
+                                    minWidth: '24px', 
+                                    textAlign: 'center',
+                                    fontWeight: 'bold',
+                                    color: item.quantidade > 0 ? '#FF6B6B' : 'text.secondary',
+                                    fontSize: '0.9rem'
+                                  }}
+                                >
+                                  {item.quantidade}
+                                </Typography>
+                                <Box sx={{ display: 'flex', gap: 0.5 }}>
+                                  <IconButton 
+                                    size="small" 
+                                    onClick={() => alterarQuantidade(item.id, -1)}
+                                    disabled={item.quantidade === 0}
+                                    sx={{
+                                      padding: '4px',
+                                      border: '1px solid',
+                                      borderColor: item.quantidade > 0 ? '#FF6B6B' : 'rgba(0,0,0,0.12)',
+                                      '&:not(:disabled):hover': {
+                                        backgroundColor: 'rgba(255,107,107,0.1)'
+                                      }
+                                    }}
+                                  >
+                                    <RemoveIcon sx={{ fontSize: '0.9rem' }} />
+                                  </IconButton>
+                                  <IconButton 
+                                    size="small" 
+                                    onClick={() => alterarQuantidade(item.id, 1)}
+                                    sx={{
+                                      padding: '4px',
+                                      backgroundColor: '#FF6B6B',
+                                      color: 'white',
+                                      '&:hover': {
+                                        backgroundColor: '#ff5252'
+                                      }
+                                    }}
+                                  >
+                                    <AddIcon sx={{ fontSize: '0.9rem' }} />
+                                  </IconButton>
+                                </Box>
+                              </Box>
+                            </Box>
                           </Box>
-                          <Box sx={{ 
-                            flex: 1,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            justifyContent: 'center'
-                          }}>
-                            <Typography
-                              variant="subtitle1"
-                              sx={{
-                                fontWeight: 'medium',
-                                fontSize: { xs: '1rem', sm: '1.1rem' },
-                                mb: 0.5
-                              }}
-                            >
-                              {item.nome}
-                            </Typography>
-                            <Typography 
-                              variant="body2" 
-                              color="text.secondary" 
-                              sx={{ 
-                                fontSize: { xs: '0.9rem', sm: '0.875rem' }
-                              }}
-                            >
-                              R$ {item.preco.toFixed(2)}
-                            </Typography>
-                          </Box>
-                          <Box sx={{ 
-                            display: 'flex', 
-                            flexDirection: 'column',
-                            alignItems: 'center', 
-                            justifyContent: 'center',
-                            gap: 1
-                          }}>
-                            <IconButton 
-                              size="small" 
-                              onClick={() => alterarQuantidade(item.id, 1)}
-                              sx={{
-                                backgroundColor: '#FF6B6B',
-                                color: 'white',
-                                '&:hover': {
-                                  backgroundColor: '#ff5252'
-                                }
-                              }}
-                            >
-                              <AddIcon />
-                            </IconButton>
-                            <Typography 
-                              sx={{ 
-                                minWidth: '30px', 
-                                textAlign: 'center',
-                                fontWeight: 'bold',
-                                color: item.quantidade > 0 ? '#FF6B6B' : 'text.secondary'
-                              }}
-                            >
-                              {item.quantidade}
-                            </Typography>
-                            <IconButton 
-                              size="small" 
-                              onClick={() => alterarQuantidade(item.id, -1)}
-                              disabled={item.quantidade === 0}
-                              sx={{
-                                border: '1px solid',
-                                borderColor: item.quantidade > 0 ? '#FF6B6B' : 'rgba(0,0,0,0.12)',
-                                '&:not(:disabled):hover': {
-                                  backgroundColor: 'rgba(255,107,107,0.1)'
-                                }
-                              }}
-                            >
-                              <RemoveIcon />
-                            </IconButton>
-                          </Box>
-                        </Box>
-                      </ListItem>
-                    ))}
+                        </Grid>
+                      ))}
+                  </Grid>
                 </div>
               ))}
             </List>
